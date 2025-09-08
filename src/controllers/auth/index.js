@@ -10,14 +10,15 @@ const { asyncHandler } = require("../../utils/asyncHandler/index");
 const ApiResponse = require("../../utils/apiResponse/index");
 
 exports.handleUserCreation = asyncHandler(async (req, res) => {
-  const { username, email, password, phoneNumber, location } = req.body;
+  const { username, email, password, phoneNumber, location , role} = req.body;
 
   const result = await UserCreation(
     username,
     email,
     password,
     phoneNumber,
-    location
+    location,
+    role
   );
 
   const { message, data, statusCode } = result;
@@ -36,9 +37,9 @@ exports.handleUserLogin = asyncHandler(async (req, res) => {
     .json(new ApiResponse(statusCode, data, message));
 });
 exports.handleUserRead = asyncHandler(async (req, res) => {
-  const { email, phoneNumber } = req.body;
+  const { email ,  phoneNumber } = req.query;
 
-  const result = await UserSearch(email, phoneNumber);
+  const result = await UserSearch(email,phoneNumber);
   const { message, data, statusCode } = result;
   return res
     .status(statusCode)

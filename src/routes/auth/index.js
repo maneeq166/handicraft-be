@@ -3,9 +3,9 @@ const { handleUserCreation, handleUserLogin, handleUserUpdation, handleUserDelet
 const router = require("express").Router();
 
 router.route("/register").post(handleUserCreation);
-router.route("/login").post(handleUserLogin);
-router.route("/search/:id").post(handleUserRead);
+router.route("/login").post(handleUserLogin);// phoneNumber login is not working
+router.route("/search").get(handleUserRead);
 router.route("/update/:id").put(handleUserUpdation);
-router.route("/deletion/:id").delete(handleUserDeletion);
+router.route("/delete/:id").delete(handleUserDeletion);
 
 module.exports = router;

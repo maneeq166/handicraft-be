@@ -12,7 +12,8 @@ exports.UserCreation = async (
   email,
   password,
   phoneNumber,
-  location
+  location,
+  role
 ) => {
   if (!username || !email || !password || !phoneNumber || !role || !location) {
     return {
@@ -23,17 +24,20 @@ exports.UserCreation = async (
   }
 
   let user = await checkUser(email, phoneNumber);
-  if (!user) {
+  
+  if (user) {
     return {
       data: null,
-      message: "Something went wrong",
+      message: "Something Went wrong",
       statusCode: 400,
     };
   }
 
   const hashedPass = await bcrypt.hash(password, 15);
 
-  user = await createUser(username, hashedPass, email, phoneNumber, location);
+  user = await createUser(username, hashedPass, email, phoneNumber, location,role);
+  
+  
 
   return {
     data: user,
@@ -43,7 +47,7 @@ exports.UserCreation = async (
 };
 
 exports.UserLogin = async (email, phoneNumber, password) => {
-  if (!phoneNumber && !password) {
+  if ((!phoneNumber || !password)&& !password) {
     return {
       data: null,
       statusCode: 400,
@@ -61,7 +65,7 @@ exports.UserLogin = async (email, phoneNumber, password) => {
     };
   }
 
-  let correctPassword = await checkPassword(password, user.password);
+  let correctPassword = await bcrypt.compare(password, user.password);
 
   if (!correctPassword) {
     return {
@@ -112,7 +116,7 @@ exports.UserUpdate = async (_id, updatedFields) => {
       message: "Required fields are missing",
     };
   }
-  let user = updateUser(_id, updatedFields);
+  let user = await updateUser(_id, updatedFields);
 
   if (!user) {
     return {
@@ -122,6 +126,8 @@ exports.UserUpdate = async (_id, updatedFields) => {
     };
   }
 
+  
+  
   return {
     data: user,
     statusCode: 200,
