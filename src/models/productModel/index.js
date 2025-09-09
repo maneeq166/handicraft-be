@@ -7,8 +7,10 @@ const productSchema = mongoose.Schema({
     category:{type:mongoose.Schema.Types.ObjectId,ref:"category"},
     stock:{type:Number,required:true},
     images:{type:[String],required:true},
-    ratings:{type:Number,required:true}
+    // ratings:{type:Number,required:true}
 },
 {timestamps:true})
 
 const Product = mongoose.model("product",productSchema);
+
+module.exports = Product

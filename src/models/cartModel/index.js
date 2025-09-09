@@ -6,3 +6,5 @@ const cartSchema = mongoose.Schema({
 },{timestamps:true})
 
 const Cart = mongoose.model("cart",cartSchema);
+
+module.exports = Cart
