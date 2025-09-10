@@ -9,12 +9,12 @@ exports.readCategory = async (categoryName)=>{
 }
 
 exports.updateCategory = async (id,updatedFields)=>{
-    if(updatedFields.products){
+    if(updatedFields.product){
        await Category.findByIdAndUpdate(id,{$push:{products:updatedFields.product}})
-       
+        delete updatedFields.product;
     }
 
-    return await Category.findByIdAndUpdate(id,{$set:updatedFields}); 
+    return await Category.findByIdAndUpdate(id,updatedFields,{new:true}); 
 }
 
 exports.deleteCategory = async(id)=>{
