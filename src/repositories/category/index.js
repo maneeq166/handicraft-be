@@ -5,6 +5,9 @@ exports.createCategory = async (categoryName,description) =>{
 }
 
 exports.readCategory = async (categoryName)=>{
+    if(!categoryName){
+        return await Category.find();
+    }
     return await Category.findOne({categoryName:categoryName})
 }
 

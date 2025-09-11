@@ -73,6 +73,8 @@ if (NODE_ENV === "development") {
 // Routes
 app.get("/", (req, res) => res.send("Welcome to the handicraft API"));
 app.use("/api/auth",require("./src/routes/auth/index"));
+app.use("/api/category",require("./src/routes/category/index"));
+
 
 //  404 Fallback
 app.use((req, res, next) => {
