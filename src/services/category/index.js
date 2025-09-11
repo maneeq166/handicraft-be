@@ -29,17 +29,9 @@ exports.CategoryCreation = async (categoryName,description) =>{
 }
 
 exports.CategoryRead = async (categoryName)=>{
-    if(!categoryName){
-        return {
-            data:null,
-            statusCode:400,
-            message:"Requried fields are missing"
-        }
-    }
+    let categoryname = await readCategory(categoryName);
 
-    let categoryName = await readCategory(categoryName);
-
-    if(!categoryName){
+    if(!categoryname){
         return {
             data:null,
             statusCode:400,
@@ -48,7 +40,7 @@ exports.CategoryRead = async (categoryName)=>{
     }
 
     return {
-        data:categoryName,
+        data:categoryname,
         message:"Category founded!",
         statusCode:200
     }

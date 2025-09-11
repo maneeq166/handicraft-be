@@ -13,7 +13,7 @@ exports.handleCreateCategory = asyncHandler(async(req,res)=>{
 })
 
 exports.handleReadCategory = asyncHandler(async(req,res)=>{
-    const {categoryName} = req.params;
+    const {categoryName} = req.query;
 
     const result = await CategoryRead(categoryName);
 
