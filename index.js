@@ -75,6 +75,7 @@ app.get("/", (req, res) => res.send("Welcome to the handicraft API"));
 app.use("/api/auth",require("./src/routes/auth/index"));
 app.use("/api/category",require("./src/routes/category/index"));
 app.use("/api/product",require("./src/routes/product/index"));
+app.use("/api/cart",require("./src/controllers/cart/index"));
 
 
 //  404 Fallback
