@@ -25,7 +25,7 @@ exports.handleProductCreation = asyncHandler(async (req, res) => {
 });
 
 exports.handleProductRead = asyncHandler(async (req, res) => {
-  const { productName, category } = req.body;
+  const { productName, category } = req.query;
 
   const result = await ProductRead(productName, category);
 
