@@ -11,10 +11,11 @@ exports.readCart = async (userId) => {
 exports.updateCart = async (userId, products) => {
   return await Cart.findOneAndUpdate(
     { userId },
-    { $set: { products: products } },
+    { $addToSet: { products: { $each: products } } },
     { new: true }
   );
 };
+
 
 exports.deleteCart = async (userId) => {
   return await Cart.findOneAndDelete({userId});
