@@ -24,9 +24,9 @@ exports.handleCartRead = asyncHandler(async(req,res)=>{
 
 
 exports.handleCartUpdation = asyncHandler(async(req,res)=>{
-    const {userId,products} = req.body;
+    const {userId, productId, quantity} = req.body;
 
-    const result = await UpdateCart(userId,products);
+    const result = await UpdateCart(userId, productId, quantity);
 
     const {message,statusCode,data} = result;
 

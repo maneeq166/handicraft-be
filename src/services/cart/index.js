@@ -55,8 +55,8 @@ exports.ReadCart = async (userId)=>{
 }
 
 
-exports.UpdateCart = async (userId,products) =>{
-    if(!userId||!products){
+exports.UpdateCart = async (userId, productId, quantity) =>{    
+    if(!userId|| !productId|| !quantity){
         return{
             data:null,
             statusCode:404,
@@ -64,7 +64,7 @@ exports.UpdateCart = async (userId,products) =>{
         }
     }
 
-    let cart = await updateCart(userId,products);
+    let cart = await updateCart(userId, productId, quantity);
 
     return {
         data:cart,
