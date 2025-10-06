@@ -7,7 +7,7 @@ const {
   ProductDelete,
 } = require("../../services/product");
 
-exports.handleProductCreation = asyncHandler(async (req, res) => {
+exports. handleProductCreation = asyncHandler(async (req, res) => {
   const { productName, price, description, category, stock, images } = req.body;
 
   const result = await ProductCreation(

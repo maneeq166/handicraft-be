@@ -20,7 +20,7 @@ exports.validateUserCreation = [
 
   body("location")
     .notEmpty().withMessage("Location is required")
-    .isObject().withMessage("Location must be an object"),
+    .isString().withMessage("Location must be an String"),
 
   body("role")
     .optional()
