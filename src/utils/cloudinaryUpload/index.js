@@ -1,25 +1,58 @@
-const cloudinary1343 = require("../config/cloudinary")
-
-// This function uploads a file and returns { url, public_id }
-exports.uploadToCloudinary = async (localFilePath) => {
-  try {
-    if (!localFilePath) throw new Error("No file path provided to upload");
+const fs = require('fs/promises');
+const  cloudinary1  = require('../../config/cloudinary/index');
 
 
+exports.uploadSingleFile = async (filePath, folder = '') => {
+   try {
+      const result = await cloudinary1.uploader.upload(filePath, {
+         folder,
+      });
+      await fs.unlink(filePath);
 
-    const result = await cloudinary1343.uploader.upload(localFilePath, {
-      resource_type: "image",
-    });   
-
-  
-
-    return {
-      url: result.secure_url,
-      public_id: result.public_id,
-    };
-  } catch (error) {
-    console.error("Cloudinary upload error:", error);
-    throw error;
-  }
+      return result.secure_url;
+   } catch (error) {
+      throw new Error(`Single File Upload Error: ${error.message}`);
+   }
 };
 
+exports.uploadMultipleFiles = async (files, folder = '') => {
+   try {
+      const uploadedUrls = [];
+      for (const file of files) {
+         const result = await cloudinary1.uploader.upload(file.path, {
+            folder,
+         });
+         uploadedUrls.push(result.secure_url);
+         await fs.unlink(file.path);
+      }
+      return uploadedUrls;
+   } catch (error) {
+      throw new Error(`Multiple File Upload Error: ${error.message}`);
+   }
+};
+
+// exports.uploadVoiceNote = async (filePath, folder = '') => {
+//    try {
+//       const result = await cloudinary_js_config.uploader.upload(filePath, {
+//          folder,
+//          resource_type: 'video',
+//       });
+//       await fs.unlink(filePath);
+//       return result.secure_url;
+//    } catch (error) {
+//       throw new Error(`Voice Note Upload Error: ${error.message}`);
+//    }
+// };
+
+// exports.uploadPDF = async (filePath, folder = '') => {
+//    try {
+//       const result = await cloudinary_js_config.uploader.upload(filePath, {
+//          folder,
+//          resource_type: 'raw',
+//       });
+//       await fs.unlink(filePath);
+//       return result.secure_url;
+//    } catch (error) {
+//       throw new Error(`PDF Upload Error: ${error.message}`);
+//    }
+// };
