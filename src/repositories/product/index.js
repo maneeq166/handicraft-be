@@ -4,18 +4,20 @@ exports.createProduct = async (
   productName,
   price,
   description,
-  category,
   stock,
   images
 ) => {
+  console.log(3);
+  
   return await Product.create({
     productName,
     price,
     description,
-    category,
     stock,
     images,
   });
+  console.log(4);
+  
 };
 
 exports.readProduct = async (productName, category) => {
@@ -29,7 +31,7 @@ exports.readProduct = async (productName, category) => {
 };
 
 exports.updateProduct = async (id, updatedFields) => {
-  return await Product.findByIdAndUpdate(id, { $set: updatedFields });
+  return await Product.findByIdAndUpdate(id, { $set: updatedFields }, { new: true });
 };
 
 exports.deleteProduct = async (id) => {

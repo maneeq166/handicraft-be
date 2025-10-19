@@ -16,20 +16,23 @@ exports.uploadSingleFile = async (filePath, folder = '') => {
 };
 
 exports.uploadMultipleFiles = async (files, folder = '') => {
-   try {
-      const uploadedUrls = [];
-      for (const file of files) {
-         const result = await cloudinary1.uploader.upload(file.path, {
-            folder,
-         });
-         uploadedUrls.push(result.secure_url);
-         await fs.unlink(file.path);
-      }
-      return uploadedUrls;
-   } catch (error) {
-      throw new Error(`Multiple File Upload Error: ${error.message}`);
-   }
+  try {
+    const uploaded = [];
+
+    for (const file of files) {
+      const result = await cloudinary1.uploader.upload(file.path, { folder });
+      uploaded.push({ public_id: result.public_id, url: result.secure_url });
+      await fs.unlink(file.path);
+    }
+
+    return uploaded;
+  } catch (error) {
+    console.error("Cloudinary Upload Error:", error);
+    throw new Error(`Multiple File Upload Error: ${error.message || error}`);
+  }
 };
+
+
 
 // exports.uploadVoiceNote = async (filePath, folder = '') => {
 //    try {

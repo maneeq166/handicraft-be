@@ -4,9 +4,14 @@ const productSchema = mongoose.Schema({
     productName:{type:String,required:true,unique:true},
     price:{type:Number,required:true},
     description:{type:String,required:true},
-    category:{type:mongoose.Schema.Types.ObjectId,ref:"category"},
+    // category:{type:mongoose.Schema.Types.ObjectId,ref:"category"},
     stock:{type:Number,required:true},
-    images:{type:String,required:true},// going to be an object of public id and url so we can upload immages on the cloudinary
+    images: [
+    {
+      public_id: { type: String, required: true },
+      url: { type: String, required: true }
+    }
+  ],// going to be an object of public id and url so we can upload immages on the cloudinary
     // ratings:{type:Number,required:true}
 },
 {timestamps:true})

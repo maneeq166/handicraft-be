@@ -1,7 +1,7 @@
 const { readProduct, createProduct, updateProduct, deleteProduct } = require("../../repositories/product")
 
-exports.ProductCreation = async (productName,price,description,category,stock,images) =>{
-    if(!productName || !price || !description || !category || !stock || !images){
+exports.ProductCreation = async (productName,price,description,stock,images) =>{
+    if(!productName || !price || !description || !stock ){
         return {
             data:null,
             message:"Required fields are missing",
@@ -19,7 +19,10 @@ exports.ProductCreation = async (productName,price,description,category,stock,im
         }
     }
 
-    product = await createProduct(productName,price,description,category,stock,images);
+    console.log(2);
+    
+
+    product = await createProduct(productName,price,description,stock,images);
 
     return {
         data:product,
@@ -47,31 +50,31 @@ exports.ProductRead = async (productName,category) =>{
     }
 }
 
-exports.ProductUpdation = async (id,updatedFields) =>{
-    if(!id||!updatedFields){
-        return {
-            data:null,
-            message:"Required fields are missing",
-            statusCode:400
-        } 
-    }
-
-    let product = await updateProduct(id,updatedFields);
-
-    if(!product){
-        return {
-            data:null,
-            message:"Update failed!",
-            statusCode:400
-        }
-    }
-
+exports.ProductUpdation = async (id, updatedFields) => {
+  if (!id || !updatedFields) {
     return {
-        data:product,
-        statusCode:200,
-        message:"Product update sucessfull"
-    }
-}
+      data: null,
+      message: "Required fields are missing",
+      statusCode: 400,
+    };
+  }
+
+  const product = await updateProduct(id, updatedFields);
+
+  if (!product) {
+    return {
+      data: null,
+      message: "Update failed!",
+      statusCode: 400,
+    };
+  }
+
+  return {
+    data: product,
+    statusCode: 200,
+    message: "Product updated successfully",
+  };
+};
 
 exports.ProductDelete = async (id) =>{
     if(!id){

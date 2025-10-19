@@ -5,10 +5,17 @@ const {
   handleProductDeletion,
 } = require("../../controllers/product");
 const { isAdmin } = require("../../middleware/loginMiddleware");
-const { validateProductCreation, validateProductDeletion, validateProductUpdation, validateProductRead } = require("../../validators/product");
+const {
+  validateProductCreation,
+  validateProductDeletion,
+  validateProductUpdation,
+  validateProductRead,
+} = require("../../validators/product");
 const { validateRequest } = require("../../middleware/validateRequest");
+const multer = require("multer");
 const router = require("express").Router();
-
+const { storage } = require('../../config/multer.js');
+const upload = multer({ storage: storage });
 /**
  * @swagger
  * tags:
@@ -64,7 +71,14 @@ const router = require("express").Router();
  *       400:
  *         description: Bad request
  */
-router.route("/").post(validateProductCreation,validateRequest, isAdmin, handleProductCreation);
+router
+  .route("/")
+  .post(
+    isAdmin,
+    upload.array("images", 15),
+    validateRequest,
+    handleProductCreation
+  );
 
 /**
  * @swagger
@@ -93,7 +107,9 @@ router.route("/").post(validateProductCreation,validateRequest, isAdmin, handleP
  *       404:
  *         description: No product found
  */
-router.route("/").get(validateProductRead,validateRequest,isAdmin, handleProductRead);
+router
+  .route("/")
+  .get(validateProductRead, validateRequest, isAdmin, handleProductRead);
 
 /**
  * @swagger
@@ -111,24 +127,48 @@ router.route("/").get(validateProductRead,validateRequest,isAdmin, handleProduct
  *             type: object
  *             required:
  *               - id
- *               - updatedFields
+ *               - productName
+ *               - price
+ *               - description
+ *               - stock
  *             properties:
  *               id:
  *                 type: string
  *                 description: Product ID
  *                 example: "64ba01f7c8b4e0d1a5f1c3b2"
- *               updatedFields:
- *                 type: object
- *                 example:
- *                   price: 899
- *                   stock: 30
+ *               productName:
+ *                 type: string
+ *                 example: "iPhone 15 Pro"
+ *               price:
+ *                 type: number
+ *                 example: 899
+ *               description:
+ *                 type: string
+ *                 example: "Updated description"
+ *               stock:
+ *                 type: number
+ *                 example: 30
+ *               images:
+ *                 type: string
+ *                 description: Cloudinary URL
+ *                 example: "https://cloudinary.com/updated_image.png"
  *     responses:
  *       200:
  *         description: Product updated successfully
+ *       400:
+ *         description: Bad request
  *       404:
  *         description: Product not found
  */
-router.route("/").put(validateProductUpdation,validateRequest,isAdmin, handleProductUpdation);
+router
+  .route("/")
+  .put(
+    isAdmin,
+    upload.array("images", 15),
+    validateRequest,
+    handleProductUpdation
+  );
+
 
 /**
  * @swagger
@@ -157,6 +197,13 @@ router.route("/").put(validateProductUpdation,validateRequest,isAdmin, handlePro
  *       404:
  *         description: Product not found
  */
-router.route("/").delete(validateProductDeletion,validateRequest,isAdmin, handleProductDeletion);
+router
+  .route("/")
+  .delete(
+    validateProductDeletion,
+    validateRequest,
+    isAdmin,
+    handleProductDeletion
+  );
 
 module.exports = router;
