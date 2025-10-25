@@ -109,7 +109,7 @@ router
  */
 router
   .route("/")
-  .get(validateProductRead, validateRequest, isAdmin, handleProductRead);
+  .get(validateProductRead, validateRequest, handleProductRead);
 
 /**
  * @swagger
