@@ -2,6 +2,7 @@ const crypto = require("crypto");
 const razorpay = require("../../config/razorpay");
 const { createOrder, updateOrderPaymentDetails } = require("../../repositories/payment/index");
 
+
 exports.createPaymentOrder = async (userId, products, totalAmount) => {
   if (!userId || !products || !totalAmount) {
     return { data: null, statusCode: 400, message: "Missing required fields" };
@@ -43,7 +44,7 @@ exports.verifyPayment = async (
 
   const body = razorpayOrderId + "|" + razorpayPaymentId;
   const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
+    .createHmac("sha256",process.env.RAZORPAY_SECRET )
     .update(body.toString())
     .digest("hex");
 
