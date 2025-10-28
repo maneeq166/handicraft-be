@@ -41,10 +41,14 @@ exports.isUser = async (req, res, next) => {
       }
 
       req.user = user;
-      req.username=username;
-      req.location=location;
-      req.phoneNumber=phoneNumber;
-      req.userId=id;
+
+req.username = decoded.username;
+
+req.phoneNumber = decoded.phoneNumber;
+
+req.location = decoded.location;
+
+req.role = decoded.role;
       next();
    } catch (error) {
       res.status(403).json(new ApiResponse(403, null, 'Invalid or expired token', false));
