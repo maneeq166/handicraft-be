@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: handicraft-be
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node index.js
+
+    envVars:
+      - key: NODE_ENV
+        value: development
+
+      - key: PORT
+        value: 5000
+
+      - key: BASE_URL
+        value: http://localhost:5000
+
+      - key: JWT_SECRET
+        sync: false  # add this in Render Dashboard for security
+
+      - key: MONGODB_URI
+        value: mongodb://localhost:27017/handicraft-db
+
+      - key: PROD_API_URL
+        value: https://api.example.com
+
+      - key: DEV_API_URL
+        value: http://localhost:5000 
+
+      - key: CLOUDINARY_CLOUD_NAME
+        value: dmfdbpfpl
+
+      - key: CLOUDINARY_API_KEY
+        sync: false  # add securely in dashboard
+
+      - key: CLOUDINARY_API_SECRET
+        sync: false  # add securely in dashboard
+
+      - key: RAZORPAY_KEY_ID
+        sync: false
+
+      - key: RAZORPAY_KEY_SECRET
+        sync: false
+
