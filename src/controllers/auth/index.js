@@ -36,6 +36,7 @@ exports.handleUserLogin = asyncHandler(async (req, res) => {
     .status(statusCode)
     .json(new ApiResponse(statusCode, data, message));
 });
+
 exports.handleUserRead = asyncHandler(async (req, res) => {
   const { email ,  phoneNumber } = req.query;
 

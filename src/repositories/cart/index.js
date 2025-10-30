@@ -1,35 +1,63 @@
 const Cart = require("../../models/cartModel");
 
-exports.createCart = async (userId, products) => {
-  return await Cart.create({ userId: userId, products:{productId: products} });
+exports.createCart = async (userId, productsArray) => {
+  // productsArray should be [{ productId: "...", quantity: N }, ...]
+  return await Cart.create({
+    userId: userId,
+    products: productsArray,
+  });
 };
 
 exports.readCart = async (userId) => {
-  return await Cart.findOne({ userId: userId });
+  return await Cart.findOne({ userId: userId }).populate("products.productId");;
 };
 
 exports.updateCart = async (userId, productId, quantity = 1) => {
-  // Try to update quantity if product already exists
-  let cart = await Cart.findOneAndUpdate(
-    { userId, "products.productId": productId },
-    { $inc: { "products.$.quantity": quantity } },
-    { new: true }
-  );
+  if (!userId || !productId) return null;
 
-  // If product not found, push a new one
-  if (!cart) {
-    cart = await Cart.findOneAndUpdate(
+  // 🧠 If quantity <= 0 → remove item
+  if (quantity <= 0) {
+    const updated = await Cart.findOneAndUpdate(
       { userId },
-      { $push: { products: { productId, quantity } } },
-      { new: true, upsert: true }
-    );
+      { $pull: { products: { productId } } },
+      { new: true }
+    ).populate("products.productId");
+    return updated;
   }
 
-  return cart;
+  // 🧠 If item exists → update quantity
+  const updated = await Cart.findOneAndUpdate(
+    { userId, "products.productId": productId },
+    { $set: { "products.$.quantity": quantity } },
+    { new: true }
+  ).populate("products.productId");
+
+  // 🧠 If item not found → push new
+  if (updated) return updated;
+
+  const newCart = await Cart.findOneAndUpdate(
+    { userId },
+    { $push: { products: { productId, quantity } } },
+    { new: true, upsert: true }
+  ).populate("products.productId");
+
+  return newCart;
 };
 
 
 
-exports.deleteCart = async (userId) => {
-  return await Cart.findOneAndDelete({userId});
+
+// Remove specific product
+exports.deleteCartItem = async (userId, productId) => {
+  return await Cart.findOneAndUpdate(
+    { userId },
+    { $pull: { products: { productId } } },
+    { new: true }
+  ).populate("products.productId");
 };
+
+// Remove entire cart
+exports.deleteEntireCart = async (userId) => {
+  return await Cart.findOneAndDelete({ userId });
+};
+

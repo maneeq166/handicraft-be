@@ -7,6 +7,7 @@ const {
   createToken,
 } = require("../../repositories/auth");
 const bcrypt = require("bcrypt");
+
 exports.UserCreation = async (
   username,
   email,
@@ -109,31 +110,48 @@ exports.UserSearch = async (email, phoneNumber) => {
 };
 
 exports.UserUpdate = async (_id, updatedFields) => {
-  if (!_id && !updatedFields){
-    return {
-      data: null,
-      statusCode: 400,
-      message: "Required fields are missing",
-    };
-  }
-  let user = await updateUser(_id, updatedFields);
+  try {
+    if (!_id || !updatedFields) {
+      return {
+        data: null,
+        statusCode: 400,
+        message: "Required fields are missing",
+      };
+    }
 
-  if (!user) {
+    const user = await updateUser(_id, updatedFields);
+
+    if (!user) {
+      return {
+        data: null,
+        statusCode: 404,
+        message: "User not found",
+      };
+    }
+
+    return {
+      data: user,
+      statusCode: 200,
+      message: "User updated successfully",
+    };
+  } catch (error) {
+    if (error.code === 11000) {
+      // Mongo duplicate key error (e.g. duplicate email)
+      return {
+        data: null,
+        statusCode: 409,
+        message: "Email already exists",
+      };
+    }
+
     return {
       data: null,
-      statusCode: 400,
+      statusCode: 500,
       message: "Something went wrong",
     };
   }
-
-  
-  
-  return {
-    data: user,
-    statusCode: 200,
-    message: "User updated!",
-  };
 };
+
 
 exports.UserDeletion = async (_id) => {
   if (!_id) {

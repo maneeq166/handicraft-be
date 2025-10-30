@@ -22,7 +22,6 @@ exports.handleCartRead = asyncHandler(async(req,res)=>{
     return res.status(statusCode).json(new ApiResponse(statusCode,data,message));
 })
 
-
 exports.handleCartUpdation = asyncHandler(async(req,res)=>{
     const {userId, productId, quantity} = req.body;
 
@@ -33,11 +32,12 @@ exports.handleCartUpdation = asyncHandler(async(req,res)=>{
     return res.status(statusCode).json(new ApiResponse(statusCode,data,message));
 })
 
-exports.handleCartDeletion = asyncHandler(async(req,res)=>{
-    const {userId} = req.body;
-    const result = await DeleteCart(userId);
+exports.handleCartDeletion = asyncHandler(async (req, res) => {
+  const { userId, productId } = req.body;
 
-    const {message,statusCode,data} = result;
+  const result = await DeleteCart(userId, productId);
 
-    return res.status(statusCode).json(new ApiResponse(statusCode,data,message));
-})
+  const { message, statusCode, data } = result;
+
+  return res.status(statusCode).json(new ApiResponse(statusCode, data, message));
+});
