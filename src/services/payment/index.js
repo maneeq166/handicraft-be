@@ -40,12 +40,11 @@ exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
     return { data: null, statusCode: 400, message: "Missing required fields" };
   }
 
-  // ✅ Secure conversion on backend instead of frontend
-  const USD_TO_INR = 88.92; // You can replace this with a live API call later
+  const USD_TO_INR = 88.92;
   const totalAmountINR = Math.round(totalAmountUSD * USD_TO_INR);
 
   const options = {
-    amount: totalAmountINR * 100, // in paise
+    amount: totalAmountINR * 100,
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
   };
