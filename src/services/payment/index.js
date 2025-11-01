@@ -3,13 +3,49 @@ const razorpay = require("../../config/razorpay");
 const { createOrder, updateOrderPaymentDetails } = require("../../repositories/payment/index");
 
 
-exports.createPaymentOrder = async (userId, products, totalAmount) => {
-  if (!userId || !products || !totalAmount) {
+// exports.createPaymentOrder = async (userId, products, totalAmount) => {
+//   if (!userId || !products || !totalAmount) {
+//     return { data: null, statusCode: 400, message: "Missing required fields" };
+//   }
+
+//   const options = {
+//     amount: totalAmount * 100, // in paise
+//     currency: "INR",
+//     receipt: `receipt_${Date.now()}`,
+//   };
+
+//   const razorpayOrder = await razorpay.orders.create(options);
+
+//   const orderData = {
+//     user: userId,
+//     products,
+//     totalAmount,
+//     razorpayOrderId: razorpayOrder.id,
+//     paymentStatus: "pending",
+//   };
+
+//   const savedOrder = await createOrder(orderData);
+
+//   return {
+//     data: { razorpayOrder, savedOrder },
+//     statusCode: 200,
+//     message: "Razorpay order created",
+//   };
+// };
+
+
+
+exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
+  if (!userId || !products || !totalAmountUSD) {
     return { data: null, statusCode: 400, message: "Missing required fields" };
   }
 
+  // ✅ Secure conversion on backend instead of frontend
+  const USD_TO_INR = 88.92; // You can replace this with a live API call later
+  const totalAmountINR = Math.round(totalAmountUSD * USD_TO_INR);
+
   const options = {
-    amount: totalAmount * 100, // in paise
+    amount: totalAmountINR * 100, // in paise
     currency: "INR",
     receipt: `receipt_${Date.now()}`,
   };
@@ -19,7 +55,8 @@ exports.createPaymentOrder = async (userId, products, totalAmount) => {
   const orderData = {
     user: userId,
     products,
-    totalAmount,
+    totalAmountINR,
+    totalAmountUSD,
     razorpayOrderId: razorpayOrder.id,
     paymentStatus: "pending",
   };
@@ -32,6 +69,7 @@ exports.createPaymentOrder = async (userId, products, totalAmount) => {
     message: "Razorpay order created",
   };
 };
+
 
 exports.verifyPayment = async (
   razorpayOrderId,
