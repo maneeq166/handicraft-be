@@ -39,19 +39,25 @@ exports.validateUserCreation = [
 
 exports.validateUserLogin = [
   body("password").notEmpty().withMessage("Password is required"),
+
   body("email").optional().isEmail().withMessage("Invalid email format"),
+
   body("phoneNumber")
     .optional()
-    .isNumeric()
-    .withMessage("Phone number must be numeric"),
+    .matches(/^\+\d{10,15}$/)
+    .withMessage(
+      "Phone number must include country code and contain 10–15 digits"
+    ),
 ];
 
 exports.validateUserRead = [
   query("email").optional().isEmail().withMessage("Invalid email format"),
   query("phoneNumber")
     .optional()
-    .isNumeric()
-    .withMessage("Phone number must be numeric"),
+    .matches(/^\+?[0-9]{10,15}$/)
+    .withMessage(
+      "Invalid phone number format (must include country code, e.g. +919876543210)"
+    ),
 ];
 
 exports.validateUserUpdation = [
