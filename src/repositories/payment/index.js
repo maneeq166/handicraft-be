@@ -5,6 +5,24 @@ exports.createOrder = async (orderData) => {
   return await order.save();
 };
 
+
+exports.getUser = async (user) =>{
+  if(!user){
+    return await Order.find();
+  }else if(user){
+    return await Order.find({user:{$regex:user,$options:"i"}})
+  }
+}
+
+exports.getOrder = async(products)=>{
+  if(!products){
+    return await Order.find();
+  }else if(products){
+    return await Order.find({products:{$regex:products,$options:"i"}});
+  }
+}
+
+
 exports.updateOrderPaymentDetails = async (
   razorpayOrderId,
   razorpayPaymentId,
@@ -22,3 +40,7 @@ exports.updateOrderPaymentDetails = async (
   );
   return order;
 };
+
+exports.deleteOrder = async(id)=>{
+  return await Order.findByIdAndDelete(id,{new:true});
+}
