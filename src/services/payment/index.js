@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 const razorpay = require("../../config/razorpay");
-const { createOrder, updateOrderPaymentDetails } = require("../../repositories/payment/index");
+const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
 
 
 // exports.createPaymentOrder = async (userId, products, totalAmount) => {
@@ -69,6 +69,44 @@ exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
   };
 };
 
+exports.getAllUsersOrders = async (user) =>{
+  if(!user){
+    return{
+      data:null,
+      statusCode:400,
+      message:"Required fields are missing"
+    }
+  }
+
+  const users = await getUser(user);
+
+  return {
+    data:users,
+    statusCode:200,
+    message:"All user"
+  }
+
+}
+
+
+exports.getAllOrders = async (products) =>{
+  if(!products){
+    return{
+      data:null,
+      statusCode:400,
+      message:"Required fields are missing"
+    }
+  }
+
+  const orders = await getOrder(products);
+
+  return {
+    data:orders,
+    statusCode:200,
+    message:"All Orders"
+  }
+}
+
 
 exports.verifyPayment = async (
   razorpayOrderId,
@@ -108,3 +146,22 @@ exports.verifyPayment = async (
     message: "Payment verified successfully",
   };
 };
+
+
+exports.DeleteOrder = async (id) =>{
+  if(!id){
+    return{
+      data:null,
+      statusCode:400,
+      message:"Required fields are missing"
+    }
+  }
+
+  const deletedOrder = await deleteOrder(id);
+
+  return {
+    data:deletedOrder,
+    statusCode:200,
+    message:"Order deleted"
+  }
+}
