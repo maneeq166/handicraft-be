@@ -31,7 +31,7 @@ exports.handleProductCreation = asyncHandler(async (req, res) => {
 
 exports.handleProductRead = asyncHandler(async (req, res) => {
   const { productName, category } = req.query;
- console.log("Reading products with:", productName, category);
+ 
   const result = await ProductRead(productName, category);
 
   const { message, data, statusCode } = result;
