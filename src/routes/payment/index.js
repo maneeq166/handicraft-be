@@ -7,7 +7,6 @@ const {
   handleGetUserOrder,
   handleOrderDeletion,
 } = require("../../controllers/payment/index");
-const { getAllOrders } = require("../../services/payment");
 
 router
   .route("/order")

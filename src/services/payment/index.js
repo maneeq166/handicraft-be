@@ -90,13 +90,13 @@ exports.getAllUsersOrders = async (user) =>{
 
 
 exports.getAllOrders = async (products) =>{
-  if(!products){
-    return{
-      data:null,
-      statusCode:400,
-      message:"Required fields are missing"
-    }
-  }
+  // if(!products){
+  //   return{
+  //     data:null,
+  //     statusCode:400,
+  //     message:"Required fields are missing"
+  //   }
+  // }
 
   const orders = await getOrder(products);
 
