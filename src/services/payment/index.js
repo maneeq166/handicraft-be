@@ -70,13 +70,7 @@ exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
 };
 
 exports.getAllUsersOrders = async (user) =>{
-  if(!user){
-    return{
-      data:null,
-      statusCode:400,
-      message:"Required fields are missing"
-    }
-  }
+
 
   const users = await getUser(user);
 
