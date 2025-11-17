@@ -11,7 +11,7 @@ exports.getUser = async (user) => {
   if (!user) {
     return await Order.find();
   } else if (user) {
-    return await Order.find({ user: { $regex: user, $options: "i" } });
+    return await Order.find({ user });
   }
 };
 

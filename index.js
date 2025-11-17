@@ -77,6 +77,7 @@ app.use("/api/category",require("./src/routes/category/index"));
 app.use("/api/product",require("./src/routes/product/index"));
 app.use("/api/cart",require("./src/routes/cart/index"));
 app.use("/api/payment",require("./src/routes/payment/index"));
+app.use("/api/contact",require("./src/routes/contact/index"));
 
 
 //  404 Fallback
