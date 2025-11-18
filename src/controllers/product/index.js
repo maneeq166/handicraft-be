@@ -9,7 +9,7 @@ const {
 const {uploadMultipleFiles} = require("../../utils/cloudinaryUpload/index");
 
 exports.handleProductCreation = asyncHandler(async (req, res) => {
-  const { productName, price, description, stock } = req.body;
+  const { productName, price, description, stock,netWeight } = req.body;
   const photos = req.files || [];
 
   const images = photos.length
@@ -19,7 +19,7 @@ exports.handleProductCreation = asyncHandler(async (req, res) => {
     console.log("1");
     
   const result = await ProductCreation(
-    productName,price,description,stock,images
+    productName,price,description,stock,images,netWeight
   );
 
   const { message, data, statusCode } = result;

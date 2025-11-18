@@ -1,47 +1,47 @@
 const crypto = require("crypto");
 const razorpay = require("../../config/razorpay");
 const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
+const CC = require("currency-converter-lt")
 
 
-// exports.createPaymentOrder = async (userId, products, totalAmount) => {
-//   if (!userId || !products || !totalAmount) {
-//     return { data: null, statusCode: 400, message: "Missing required fields" };
-//   }
+const crypto = require("crypto");
+const razorpay = require("../../config/razorpay");
+const Product = require("../../models/product"); 
+const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
+const CC = require("currency-converter-lt");
 
-//   const options = {
-//     amount: totalAmount * 100, // in paise
-//     currency: "INR",
-//     receipt: `receipt_${Date.now()}`,
-//   };
-
-//   const razorpayOrder = await razorpay.orders.create(options);
-
-//   const orderData = {
-//     user: userId,
-//     products,
-//     totalAmount,
-//     razorpayOrderId: razorpayOrder.id,
-//     paymentStatus: "pending",
-//   };
-
-//   const savedOrder = await createOrder(orderData);
-
-//   return {
-//     data: { razorpayOrder, savedOrder },
-//     statusCode: 200,
-//     message: "Razorpay order created",
-//   };
-// };
-
-
-
-exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
-  if (!userId || !products || !totalAmountUSD) {
+exports.createPaymentOrder = async (userId, products) => {
+  if (!userId || !products || products.length === 0) {
     return { data: null, statusCode: 400, message: "Missing required fields" };
   }
 
-  const USD_TO_INR = 88.92;
-  const totalAmountINR = Math.round(totalAmountUSD * USD_TO_INR);
+  // 1 kg = 1 USD pricing
+  let totalAmountUSD = 0;
+
+  for (const item of products) {
+    const productData = await Product.findById(item.product);
+    if (!productData) {
+      return { data: null, statusCode: 400, message: "Product not found" };
+    }
+
+    const weight = Number(productData.netWeight) || 0;
+    const quantity = Number(item.quantity) || 1;
+
+    // Total USD = weight(kg) * quantity * 1 USD
+    totalAmountUSD += weight * quantity;
+  }
+
+  // Convert USD to INR using live API
+  const cc = new CC({ from: "USD", to: "INR" });
+  let liveRate;
+
+  try {
+    liveRate = await cc.convert(1);
+  } catch (err) {
+    liveRate = 88.92;
+  }
+
+  const totalAmountINR = Math.round(totalAmountUSD * liveRate);
 
   const options = {
     amount: totalAmountINR * 100,
@@ -68,6 +68,7 @@ exports.createPaymentOrder = async (userId, products, totalAmountUSD) => {
     message: "Razorpay order created",
   };
 };
+
 
 exports.getAllUsersOrders = async (user) =>{
 

@@ -1,6 +1,6 @@
 const { readProduct, createProduct, updateProduct, deleteProduct } = require("../../repositories/product")
 
-exports.ProductCreation = async (productName,price,description,stock,images) =>{
+exports.ProductCreation = async (productName,price,description,stock,images,netWeight) =>{
     if(!productName || !price || !description || !stock ){
         return {
             data:null,
@@ -22,7 +22,7 @@ exports.ProductCreation = async (productName,price,description,stock,images) =>{
     console.log(2);
     
 
-    product = await createProduct(productName,price,description,stock,images);
+    product = await createProduct(productName,price,description,stock,images,netWeight);
 
     return {
         data:product,

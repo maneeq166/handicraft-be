@@ -5,9 +5,9 @@ exports.createProduct = async (
   price,
   description,
   stock,
-  images
+  images,
+  netWeight
 ) => {
-  console.log(3);
   
   return await Product.create({
     productName,
@@ -15,8 +15,9 @@ exports.createProduct = async (
     description,
     stock,
     images,
+    netWeight
   });
-  console.log(4);
+  
   
 };
 

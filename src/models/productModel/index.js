@@ -11,7 +11,9 @@ const productSchema = mongoose.Schema({
       public_id: { type: String, required: true },
       url: { type: String, required: true }
     }
-  ],// going to be an object of public id and url so we can upload immages on the cloudinary
+  ],
+  netWeight:{type:Number,required:true}
+  // going to be an object of public id and url so we can upload immages on the cloudinary
     // ratings:{type:Number,required:true}
 },
 {timestamps:true})

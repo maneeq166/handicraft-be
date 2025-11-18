@@ -9,9 +9,9 @@ const {
 
 exports.handleCreateOrder = async (req, res) => {
   try {
-    const { userId, products, totalAmountUSD } = req.body;
+    const { userId, products } = req.body;
 
-    const result = await createPaymentOrder(userId, products, totalAmountUSD);
+    const result = await createPaymentOrder(userId, products);
     const { message, data, statusCode } = result;
 
     res.status(Number(statusCode) || 200).json(new ApiResponse(statusCode, data, message));
