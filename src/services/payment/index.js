@@ -4,12 +4,6 @@ const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder }
 const CC = require("currency-converter-lt")
 
 
-const crypto = require("crypto");
-const razorpay = require("../../config/razorpay");
-const Product = require("../../models/product"); 
-const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
-const CC = require("currency-converter-lt");
-
 exports.createPaymentOrder = async (userId, products) => {
   if (!userId || !products || products.length === 0) {
     return { data: null, statusCode: 400, message: "Missing required fields" };
