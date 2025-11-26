@@ -1,7 +1,8 @@
 const crypto = require("crypto");
 const razorpay = require("../../config/razorpay");
 const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
-const CC = require("currency-converter-lt")
+const CC = require("currency-converter-lt");
+const Product = require("../../models/productModel/index");
 
 exports.createPaymentOrder = async (userId, products) => {
   try {
