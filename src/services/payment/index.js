@@ -40,12 +40,19 @@ exports.createPaymentOrder = async (userId, products) => {
 
       const weight = Number(productData.netWeight);
       const quantity = Number(item.quantity) || 1;
+      const price = Number(productData.price) || 0;
 
-      if (isNaN(weight) || isNaN(quantity)) {
+      if (isNaN(weight) || isNaN(quantity) || isNaN(price)) {
         return { data: null, statusCode: 400, message: "Invalid item data" };
       }
 
-      totalAmountUSD += weight * quantity;
+      // -----------------------------------------
+      // 🔥 NEW FIX → ADD PRODUCT PRICE + SHIPPING
+      // -----------------------------------------
+      const itemCostUSD = price * quantity;          // price cost
+      const shippingCostUSD = weight * quantity * 1; // $1 per kg
+
+      totalAmountUSD += itemCostUSD + shippingCostUSD;
     }
 
     // Validate totalAmountUSD
@@ -102,7 +109,6 @@ exports.createPaymentOrder = async (userId, products) => {
     return { data: null, statusCode: 500, message: error.message };
   }
 };
-
 
 
 
