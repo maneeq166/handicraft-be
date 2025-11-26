@@ -14,7 +14,16 @@ exports.createPaymentOrder = async (userId, products) => {
     let totalAmountUSD = 0;
 
     for (const item of products) {
-      const productData = await Product.findById(item.product);
+const productId =
+  item.product ||
+  item.productId ||
+  (typeof item === "string" ? item : null);
+
+if (!productId) {
+  return { statusCode: 400, message: "Invalid product ID" };
+}
+
+const productData = await Product.findById(productId);
       if (!productData) {
         return { data: null, statusCode: 400, message: "Product not found" };
       }
