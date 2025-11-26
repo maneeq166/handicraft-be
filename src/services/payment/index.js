@@ -14,40 +14,57 @@ exports.createPaymentOrder = async (userId, products) => {
     let totalAmountUSD = 0;
 
     for (const item of products) {
-const productId =
-  item.product ||
-  item.productId ||
-  (typeof item === "string" ? item : null);
+      const productId =
+        item.product ||
+        item.productId ||
+        item._id ||
+        (typeof item === "string" ? item : null);
 
-if (!productId) {
-  return { statusCode: 400, message: "Invalid product ID" };
-}
+      if (!productId) {
+        return { data: null, statusCode: 400, message: "Invalid product ID" };
+      }
 
-const productData = await Product.findById(productId);
+      const productData = await Product.findById(productId);
       if (!productData) {
         return { data: null, statusCode: 400, message: "Product not found" };
       }
 
-      if (!productData.netWeight) {
-        return { data: null, statusCode: 400, message: "Product missing netWeight" };
+      // VALIDATE WEIGHT
+      if (!productData.netWeight || isNaN(productData.netWeight)) {
+        return {
+          data: null,
+          statusCode: 400,
+          message: `Product ${productData.productName} has invalid netWeight`,
+        };
       }
 
       const weight = Number(productData.netWeight);
       const quantity = Number(item.quantity) || 1;
 
+      if (isNaN(weight) || isNaN(quantity)) {
+        return { data: null, statusCode: 400, message: "Invalid item data" };
+      }
+
       totalAmountUSD += weight * quantity;
     }
 
+    // Validate totalAmountUSD
     if (isNaN(totalAmountUSD) || totalAmountUSD <= 0) {
-      return { data: null, statusCode: 400, message: "Invalid total amount" };
+      return { data: null, statusCode: 400, message: "Invalid total USD amount" };
     }
 
-    const cc = new CC({ from: "USD", to: "INR" });
+    // CURRENCY CONVERSION
     let liveRate = 88.92;
-
     try {
-      liveRate = await cc.convert(1);
-    } catch (err) {}
+      const cc = new CC({ from: "USD", to: "INR" });
+      const result = await cc.convert(1);
+
+      if (result && !isNaN(result)) {
+        liveRate = result;
+      }
+    } catch (e) {
+      console.log("Currency conversion failed, using fallback");
+    }
 
     const totalAmountINR = Math.round(totalAmountUSD * liveRate);
 
@@ -55,6 +72,7 @@ const productData = await Product.findById(productId);
       return { data: null, statusCode: 400, message: "Invalid INR amount" };
     }
 
+    // Razorpay requires amount in paise
     const options = {
       amount: totalAmountINR * 100,
       currency: "INR",
@@ -79,12 +97,12 @@ const productData = await Product.findById(productId);
       statusCode: 200,
       message: "Razorpay order created",
     };
-
   } catch (error) {
     console.error("PAYMENT ORDER ERROR >>>", error);
     return { data: null, statusCode: 500, message: error.message };
   }
 };
+
 
 
 
