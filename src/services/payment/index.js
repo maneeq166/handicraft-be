@@ -3,65 +3,73 @@ const razorpay = require("../../config/razorpay");
 const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder } = require("../../repositories/payment/index");
 const CC = require("currency-converter-lt")
 
-
 exports.createPaymentOrder = async (userId, products) => {
-  if (!userId || !products || products.length === 0) {
-    return { data: null, statusCode: 400, message: "Missing required fields" };
-  }
-
-  // 1 kg = 1 USD pricing
-  let totalAmountUSD = 0;
-
-  for (const item of products) {
-    const productData = await Product.findById(item.product);
-    if (!productData) {
-      return { data: null, statusCode: 400, message: "Product not found" };
+  try {
+    if (!userId || !products || products.length === 0) {
+      return { data: null, statusCode: 400, message: "Missing required fields" };
     }
 
-    const weight = Number(productData.netWeight) || 0;
-    const quantity = Number(item.quantity) || 1;
+    let totalAmountUSD = 0;
 
-    // Total USD = weight(kg) * quantity * 1 USD
-    totalAmountUSD += weight * quantity;
-  }
+    for (const item of products) {
+      const productData = await products.findById(item.product);
+      if (!productData) {
+        return { data: null, statusCode: 400, message: "Product not found" };
+      }
 
-  // Convert USD to INR using live API
-  const cc = new CC({ from: "USD", to: "INR" });
-  let liveRate;
+      const weight = Number(productData.netWeight) || 0;
+      const quantity = Number(item.quantity) || 1;
 
-  try {
-    liveRate = await cc.convert(1);
+      totalAmountUSD += weight * quantity;
+    }
+
+    const cc = new CC({ from: "USD", to: "INR" });
+    let liveRate;
+
+    try {
+      liveRate = await cc.convert(1);
+    } catch (err) {
+      liveRate = 88.92;
+    }
+
+    const totalAmountINR = Math.round(totalAmountUSD * liveRate);
+
+    const options = {
+      amount: totalAmountINR * 100,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    };
+
+    // THE REAL ERROR POINT – NOW SAFE
+    const razorpayOrder = await razorpay.orders.create(options);
+
+    const orderData = {
+      user: userId,
+      products,
+      totalAmountINR,
+      totalAmountUSD,
+      razorpayOrderId: razorpayOrder.id,
+      paymentStatus: "pending",
+    };
+
+    const savedOrder = await createOrder(orderData);
+
+    return {
+      data: { razorpayOrder, savedOrder },
+      statusCode: 200,
+      message: "Razorpay order created",
+    };
+
   } catch (err) {
-    liveRate = 88.92;
+    console.error("Payment Order Error →", err); 
+    return {
+      data: null,
+      statusCode: 500,
+      message: err.message || "Payment order failed",
+    };
   }
-
-  const totalAmountINR = Math.round(totalAmountUSD * liveRate);
-
-  const options = {
-    amount: totalAmountINR * 100,
-    currency: "INR",
-    receipt: `receipt_${Date.now()}`,
-  };
-
-  const razorpayOrder = await razorpay.orders.create(options);
-
-  const orderData = {
-    user: userId,
-    products,
-    totalAmountINR,
-    totalAmountUSD,
-    razorpayOrderId: razorpayOrder.id,
-    paymentStatus: "pending",
-  };
-
-  const savedOrder = await createOrder(orderData);
-
-  return {
-    data: { razorpayOrder, savedOrder },
-    statusCode: 200,
-    message: "Razorpay order created",
-  };
 };
+
 
 
 exports.getAllUsersOrders = async (user) =>{
