@@ -10,30 +10,43 @@ const {
 exports.handleCreateOrder = async (req, res) => {
   try {
     const { userId, products } = req.body;
+    console.log("PAYMENT REQ BODY >>>", JSON.stringify(req.body));
 
-    console.log("REQ BODY >>>", req.body);
+    // basic validation
+    if (!userId || !Array.isArray(products) || products.length === 0) {
+      return res.status(400).json({
+        success: false,
+        statusCode: 400,
+        data: null,
+        message: "userId and products are required",
+      });
+    }
 
     const result = await createPaymentOrder(userId, products);
 
-    console.log("ORDER RESULT >>>", result);
+    // result must be { data, statusCode, message }
+    const statusCode = Number(result?.statusCode) || 500;
+    const success = statusCode >= 200 && statusCode < 400;
 
-    return res
-      .status(result.statusCode)
-      .json({
-        success: result.statusCode < 400,
-        data: result.data,
-        message: result.message
-      });
+    console.log("PAYMENT SERVICE RESULT >>>", { statusCode, message: result?.message });
 
+    return res.status(statusCode).json({
+      success,
+      statusCode,
+      data: result?.data ?? null,
+      message: result?.message ?? (success ? "success" : "error"),
+    });
   } catch (error) {
-    console.error("CONTROLLER ERROR >>>", error);
+    // log full error so you can copy it from server logs
+    console.error("HANDLE CREATE ORDER ERROR >>>", error);
     return res.status(500).json({
       success: false,
-      message: error.message,
+      statusCode: 500,
+      data: null,
+      message: error?.message || "Internal Server Error",
     });
   }
 };
-
 
 exports.handleGetUserOrder = async (req,res) =>{
   try {
