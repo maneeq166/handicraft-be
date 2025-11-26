@@ -11,14 +11,29 @@ exports.handleCreateOrder = async (req, res) => {
   try {
     const { userId, products } = req.body;
 
-    const result = await createPaymentOrder(userId, products);
-    const { message, data, statusCode } = result;
+    console.log("REQ BODY >>>", req.body);
 
-    res.status(Number(statusCode) || 200).json(new ApiResponse(statusCode, data, message));
+    const result = await createPaymentOrder(userId, products);
+
+    console.log("ORDER RESULT >>>", result);
+
+    return res
+      .status(result.statusCode)
+      .json({
+        success: result.statusCode < 400,
+        data: result.data,
+        message: result.message
+      });
+
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    console.error("CONTROLLER ERROR >>>", error);
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
   }
 };
+
 
 exports.handleGetUserOrder = async (req,res) =>{
   try {
