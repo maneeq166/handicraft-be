@@ -4,6 +4,7 @@ const { createOrder, updateOrderPaymentDetails, getUser, getOrder, deleteOrder }
 const CC = require("currency-converter-lt");
 const Product = require("../../models/productModel/index");
 
+
 exports.createPaymentOrder = async (userId, products) => {
   try {
     if (!userId || !products || products.length === 0) {
@@ -18,22 +19,32 @@ exports.createPaymentOrder = async (userId, products) => {
         return { data: null, statusCode: 400, message: "Product not found" };
       }
 
-      const weight = Number(productData.netWeight) || 0;
+      if (!productData.netWeight) {
+        return { data: null, statusCode: 400, message: "Product missing netWeight" };
+      }
+
+      const weight = Number(productData.netWeight);
       const quantity = Number(item.quantity) || 1;
 
       totalAmountUSD += weight * quantity;
     }
 
+    if (isNaN(totalAmountUSD) || totalAmountUSD <= 0) {
+      return { data: null, statusCode: 400, message: "Invalid total amount" };
+    }
+
     const cc = new CC({ from: "USD", to: "INR" });
-    let liveRate;
+    let liveRate = 88.92;
 
     try {
       liveRate = await cc.convert(1);
-    } catch (err) {
-      liveRate = 88.92;
-    }
+    } catch (err) {}
 
     const totalAmountINR = Math.round(totalAmountUSD * liveRate);
+
+    if (isNaN(totalAmountINR) || totalAmountINR <= 0) {
+      return { data: null, statusCode: 400, message: "Invalid INR amount" };
+    }
 
     const options = {
       amount: totalAmountINR * 100,
@@ -41,7 +52,6 @@ exports.createPaymentOrder = async (userId, products) => {
       receipt: `receipt_${Date.now()}`,
     };
 
-    // THE REAL ERROR POINT – NOW SAFE
     const razorpayOrder = await razorpay.orders.create(options);
 
     const orderData = {
@@ -61,11 +71,10 @@ exports.createPaymentOrder = async (userId, products) => {
       message: "Razorpay order created",
     };
 
-} catch (error) {
-  console.error("PAYMENT ORDER ERROR >>>", error);
-  return { data: null, statusCode: 500, message: error.message };
-}
-
+  } catch (error) {
+    console.error("PAYMENT ORDER ERROR >>>", error);
+    return { data: null, statusCode: 500, message: error.message };
+  }
 };
 
 

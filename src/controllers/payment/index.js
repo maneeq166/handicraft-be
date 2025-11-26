@@ -37,7 +37,6 @@ exports.handleCreateOrder = async (req, res) => {
       message: result?.message ?? (success ? "success" : "error"),
     });
   } catch (error) {
-    // log full error so you can copy it from server logs
     console.error("HANDLE CREATE ORDER ERROR >>>", error);
     return res.status(500).json({
       success: false,
@@ -47,6 +46,7 @@ exports.handleCreateOrder = async (req, res) => {
     });
   }
 };
+
 
 exports.handleGetUserOrder = async (req,res) =>{
   try {
