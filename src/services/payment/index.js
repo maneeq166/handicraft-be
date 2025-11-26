@@ -61,11 +61,14 @@ exports.createPaymentOrder = async (userId, products) => {
       message: "Razorpay order created",
     };
 
-  } catch (error) {
-  console.error("PAYMENT ORDER ERROR >>>", error);
-  return { data: null, statusCode: 500, message: error.message };
-}
-
+  } catch (err) {
+    console.error("Payment Order Error →", err); 
+    return {
+      data: null,
+      statusCode: 500,
+      message: err.message || "Payment order failed",
+    };
+  }
 };
 
 
